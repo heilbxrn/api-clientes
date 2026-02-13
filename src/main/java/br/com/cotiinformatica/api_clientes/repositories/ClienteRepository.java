@@ -31,8 +31,59 @@ public class ClienteRepository {
         statement.execute();
 
         connection.close();
+    }
+
+    public boolean atualizar(Cliente cliente) throws Exception {
+
+
+        var sql = """
+                    UPDATE clientes 
+                    SET
+                        nome = ?, email = ?, telefone = ?
+                    WHERE
+                        id = ? 
+                """;
+
+
+        var connection = connectionFactory.getConnection();
+
+
+        var statement = connection.prepareStatement(sql);
+        statement.setString(1, cliente.getNome());
+        statement.setString(2, cliente.getEmail());
+        statement.setString(3, cliente.getTelefone());
+        statement.setInt(4, cliente.getId());
+        var result = statement.executeUpdate();
+
+
+        connection.close();
+
+
+        return result > 0;
+    }
+
+    public boolean excluir(Integer id) throws Exception {
+
+        var sql = """
+                    UPDATE clientes
+                    SET
+                        ativo = 0
+                    WHERE
+                        id = ?
+                """;
+
+        var connection = connectionFactory.getConnection();
+
+        var statement = connection.prepareStatement(sql);
+        statement.setInt(1, id);
+        var result = statement.executeUpdate();
+
+        connection.close();
+
+        return result > 0;
 
     }
+
 
     public List<Cliente> obterPorNome(String nome) throws Exception {
 
@@ -63,14 +114,13 @@ public class ClienteRepository {
             cliente.setAtivo(result.getInt("ativo"));
 
             lista.add(cliente);
-
         }
 
         connection.close();
 
         return lista;
-
-
     }
+
+
 
 }
